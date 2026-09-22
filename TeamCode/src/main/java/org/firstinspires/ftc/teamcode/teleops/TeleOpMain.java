@@ -1,14 +1,20 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Limelight;
+import org.firstinspires.ftc.teamcode.mechanisms.Turret;
 
 @TeleOp
 public class TeleOpMain extends OpMode {
 
     //instanciando o seu mecanismo isolado
     private MecanumDrive drive;
+    private Limelight limelight;
+    private Turret turret;
 
     // configuracoes de pilotagem
     private static final double DEADZONE = 0.05;
@@ -20,6 +26,12 @@ public class TeleOpMain extends OpMode {
     public void init() {
         drive = new MecanumDrive();
         drive.init(hardwareMap);
+
+        limelight = new Limelight();
+        limelight.init(hardwareMap);
+
+        turret = new Turret();
+        turret.init(hardwareMap);
 
         telemetry.addLine("MecanumDrive Inicializado.");
         telemetry.addLine("Odometria Pinpoint pronta.");
@@ -59,6 +71,22 @@ public class TeleOpMain extends OpMode {
         } else {
             drive.moveDriveTrain(x, y, turn);
         }
+
+        // atualiza a orientação do robô na Limelight (precisa disso pro megatag)
+        YawPitchRollAngles orientation = limelight.imu.getRobotYawPitchRollAngles();
+        limelight.limelight.updateRobotOrientation(orientation.getYaw());
+
+
+        // pega a leitura mais recente e manda pro turret mirar (ou parar, se não tiver alvo)
+        LLResult llResult = limelight.limelight.getLatestResult();
+        turret.update(llResult);
+
+        telemetry.addLine("--- TURRET / LIMELIGHT ---");
+        telemetry.addData("Alvo válido", llResult != null && llResult.isValid());
+        if (llResult != null && llResult.isValid()) {
+            telemetry.addData("Tx (erro de mira)", llResult.getTx());
+        }
+
 
         telemetry.addData("--- PILOTAGEM ---", "");
         telemetry.addData("Modo", isFieldCentric ? "FIELD CENTRIC" : "ROBOT CENTRIC");
