@@ -2,15 +2,14 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 
 
 @Autonomous
 public class BlueAutonomous extends LinearOpMode {
 
-    MecanumDrive mecanum;
-    enum State{
+     MecanumDrive mecanum;
+    public enum State{
         WALKING,
         SHOOTING,
         TURNING,
