@@ -15,8 +15,8 @@ public class TeleOpMain extends OpMode {
 
     //instanciando o seu mecanismo isolado
     private MecanumDrive drive;
-    Limelight limelight;
-    Turret turret;
+    //Limelight limelight;
+    //Turret turret;
 
     // configuracoes de pilotagem
     private static final double DEADZONE = 0.05;
@@ -29,11 +29,11 @@ public class TeleOpMain extends OpMode {
         drive = new MecanumDrive();
         drive.init(hardwareMap);
 
-        limelight = new Limelight();
-        limelight.init(hardwareMap);
+        //limelight = new Limelight();
+        //limelight.init(hardwareMap);
 
-        turret = new Turret();
-        turret.init(hardwareMap);
+        //turret = new Turret();
+        //turret.init(hardwareMap);
 
         telemetry.addLine("MecanumDrive Inicializado.");
         telemetry.addLine("Odometria Pinpoint pronta.");
@@ -98,8 +98,8 @@ public class TeleOpMain extends OpMode {
         }
 
         // Limelight //
-        YawPitchRollAngles orientation = limelight.imu.getRobotYawPitchRollAngles();
-        limelight.limelight.updateRobotOrientation(orientation.getYaw());
+        //YawPitchRollAngles orientation = limelight.imu.getRobotYawPitchRollAngles();
+        //limelight.limelight.updateRobotOrientation(orientation.getYaw());
 
         telemetry.addData("--- PILOTAGEM ---", "");
         telemetry.addData("Modo", isFieldCentric ? "FIELD CENTRIC" : "ROBOT CENTRIC");
@@ -112,15 +112,15 @@ public class TeleOpMain extends OpMode {
         telemetry.addData("Encoders", drive.getPositions());
 
         telemetry.addLine("---------------------Limelight--------------------");
-        LLResult llresult = limelight.limelight.getLatestResult();
-        turret.update(llresult);
-        if (llresult != null && llresult.isValid()){
-            Pose3D botPose = llresult.getBotpose_MT2();
-            telemetry.addData("Tx", llresult.getTx());
-            telemetry.addData("Ty", llresult.getTy());
-            telemetry.addData("Ta", llresult.getTa());
+        //LLResult llresult = limelight.limelight.getLatestResult();
+        //turret.update(llresult);
+        //if (llresult != null && llresult.isValid()){
+          //  Pose3D botPose = llresult.getBotpose_MT2();
+            //telemetry.addData("Tx", llresult.getTx());
+            //telemetry.addData("Ty", llresult.getTy());
+            //telemetry.addData("Ta", llresult.getTa());
 
         telemetry.update();
 
     }
-}}
+}
