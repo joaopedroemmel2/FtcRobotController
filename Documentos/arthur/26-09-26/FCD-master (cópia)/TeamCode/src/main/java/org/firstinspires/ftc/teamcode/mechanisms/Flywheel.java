@@ -15,7 +15,11 @@ public class Flywheel {
 
     private static final double TICKS_PER_REV = 28.0;
 
-    private double kS = 0.27, kV=0.000121, kP=0.000003;
+    private double kS = 0.27,   // kS overcome friction
+                   kV=0.000121, // kV Overshoot/undershoot target rpm = close as possible
+                   kP=0.000003; // kP reduce time it takes to get to goal rpm:
+                                // Undershooting = kP is too low
+                                // Overshooting = kP is too high
 
     public void init(HardwareMap hwmap) {
         m1 = hwmap.get(DcMotorEx.class, "leftFlywheel");
@@ -28,8 +32,8 @@ public class Flywheel {
         m2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        m1.setDirection(DcMotorSimple.Direction.FORWARD);
-        m2.setDirection(DcMotorSimple.Direction.REVERSE);
+        m1.setDirection(DcMotorSimple.Direction.REVERSE);
+        m2.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void setMotorPower(double power) {

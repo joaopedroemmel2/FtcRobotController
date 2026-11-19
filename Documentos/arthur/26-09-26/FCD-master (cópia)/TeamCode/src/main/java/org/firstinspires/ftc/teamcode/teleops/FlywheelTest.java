@@ -16,11 +16,9 @@ public class FlywheelTest extends OpMode {
         flywheel.init(hardwareMap);
     }
     public void loop() {
-        flywheel.setMotorRPM(3600);
+        if (gamepad1.right_trigger > 0){flywheel.setMotorRPM(3600);}
+        else {flywheel.setMotorRPM(0);}
 
     }
-
-
-
 }
 

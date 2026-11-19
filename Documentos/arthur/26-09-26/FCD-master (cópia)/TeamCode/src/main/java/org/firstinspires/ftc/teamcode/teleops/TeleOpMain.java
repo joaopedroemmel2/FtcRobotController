@@ -6,17 +6,22 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Ramp;
 import org.firstinspires.ftc.teamcode.mechanisms.Turret;
 
 @TeleOp
 public class TeleOpMain extends OpMode {
 
-    //instanciando o seu mecanismo isolado
     private MecanumDrive drive;
-    //Limelight limelight;
-    //Turret turret;
+
+    Limelight limelight;
+    Turret turret;
+    Intake intake;
+
+    Ramp ramp;
 
     // configuracoes de pilotagem
     private static final double DEADZONE = 0.05;
@@ -29,11 +34,17 @@ public class TeleOpMain extends OpMode {
         drive = new MecanumDrive();
         drive.init(hardwareMap);
 
-        //limelight = new Limelight();
-        //limelight.init(hardwareMap);
+        intake = new Intake();
+        intake.init(hardwareMap);
 
-        //turret = new Turret();
-        //turret.init(hardwareMap);
+        limelight = new Limelight();
+        limelight.init(hardwareMap);
+
+        turret = new Turret();
+        turret.init(hardwareMap);
+
+        ramp = new Ramp();
+        ramp.init(hardwareMap);
 
         telemetry.addLine("MecanumDrive Inicializado.");
         telemetry.addLine("Odometria Pinpoint pronta.");
@@ -46,6 +57,8 @@ public class TeleOpMain extends OpMode {
     private double driveSpeed = 1.0;
     private boolean lastDpadUp = false;
     private boolean lastDpadDown = false;
+
+    private boolean lastPadGuide = false;
 
     @Override
     public void loop() {
@@ -97,9 +110,28 @@ public class TeleOpMain extends OpMode {
             drive.moveDriveTrain(x, y, turn);
         }
 
+        // Ativação do mecanismo do intake, adicionar função de aumentar conforme a pressão no futuro
+        if (gamepad1.right_trigger > 0){
+            intake.setPower(1);
+        }
+
+        // Ativação do mecanismo da rampa
+        if (gamepad1.a){
+            ramp.setPower(1);
+        }
+
+        // Alternância entre as pipelines de identificação de apriltag da aliança Azul(0) e Vermelha(1)
+        if (gamepad1.guide && !lastPadGuide){
+            int X = 0;
+            X+=1;
+            if (X>1){X=0;}
+            limelight.limelight.pipelineSwitch(X);
+        }
+        lastPadGuide = gamepad1.guide;
+
         // Limelight //
-        //YawPitchRollAngles orientation = limelight.imu.getRobotYawPitchRollAngles();
-        //limelight.limelight.updateRobotOrientation(orientation.getYaw());
+        YawPitchRollAngles orientation = limelight.imu.getRobotYawPitchRollAngles();
+        limelight.limelight.updateRobotOrientation(orientation.getYaw());
 
         telemetry.addData("--- PILOTAGEM ---", "");
         telemetry.addData("Modo", isFieldCentric ? "FIELD CENTRIC" : "ROBOT CENTRIC");
@@ -111,16 +143,18 @@ public class TeleOpMain extends OpMode {
         telemetry.addData("Potências", drive.getPowers());
         telemetry.addData("Encoders", drive.getPositions());
 
+        telemetry.addData("Corrente: Intake", intake.getCurrent());
+
         telemetry.addLine("---------------------Limelight--------------------");
-        //LLResult llresult = limelight.limelight.getLatestResult();
-        //turret.update(llresult);
-        //if (llresult != null && llresult.isValid()){
-          //  Pose3D botPose = llresult.getBotpose_MT2();
-            //telemetry.addData("Tx", llresult.getTx());
-            //telemetry.addData("Ty", llresult.getTy());
-            //telemetry.addData("Ta", llresult.getTa());
+        LLResult llresult = limelight.limelight.getLatestResult();
+        turret.update(llresult);
+        if (llresult != null && llresult.isValid()){
+           Pose3D botPose = llresult.getBotpose_MT2();
+            telemetry.addData("Tx", llresult.getTx());
+            telemetry.addData("Ty", llresult.getTy());
+            telemetry.addData("Ta", llresult.getTa());
 
         telemetry.update();
 
     }
-}
+}}
